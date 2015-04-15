@@ -22,39 +22,23 @@ public class OnlineStoreTest {
     }
 
     @Test
-    public void testOnlineStoreGivesSalePriceOf5IPodsOfBrazil() throws StoreNotFoundException {
-        onlineStore.addStore(brazil);
-        onlineStore.addStore(argentina);
-        int salePrice = onlineStore.getSalePrice("Brazil", 5);
-        assertEquals(500, salePrice);
-    }
-
-    @Test
-    public void testOnlineStoreGivesSalePriceOf5IPodsOfArgentina() throws StoreNotFoundException {
-        onlineStore.addStore(brazil);
-        onlineStore.addStore(argentina);
-        int salePrice = onlineStore.getSalePrice("Argentina", 5);
-        assertEquals(250, salePrice);
-    }
-
-    @Test
-    public void testOnlineStoreGivesSuccessStatusIfNewStoreIsAdded() {
+    public void testAddStoreGivesSuccessStatusIfNewStoreIsAdded() {
         boolean status = onlineStore.addStore(brazil);
         assertTrue(status);
     }
 
     @Test
-    public void testOnlineStoreGivesFailureStatusIfExistingStoreIsAddedAgain() {
+    public void testAddStoreGivesFailureStatusIfExistingStoreIsAddedAgain() {
         onlineStore.addStore(brazil);
         Store brazil2 = new Store("Brazil", 100, 100);
         boolean status = onlineStore.addStore(brazil2);
         assertFalse(status);
     }
 
-//    @Test
-//    public void testOnlineStoreReducesStockItemPurchasedOf() {
-//        OnlineStore onlineStore = new OnlineStore();
-//        onlineStore.addStore()
-//        assertEquals();
-//    }
+    @Test
+    public void testOrderReturnsCostOfThePurchaseIfPurchaseIsSuccessful() throws StoreNotFoundException {
+        onlineStore.addStore(brazil);
+        assertEquals(500, onlineStore.order("Brazil", 5));
+    }
+
 }

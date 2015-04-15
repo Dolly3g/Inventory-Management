@@ -24,4 +24,15 @@ public class Store {
     public int calculateSalePriceFor(int numberOfItems) {
         return numberOfItems * price;
     }
+
+    public boolean purchase(int numberOfItems) {
+        if(numberOfItems > 100)
+            return false;
+        stock = stock - numberOfItems;
+        return true;
+    }
+
+    public int getStock() {
+        return stock;
+    }
 }

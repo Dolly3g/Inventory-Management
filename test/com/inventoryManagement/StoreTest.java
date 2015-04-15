@@ -1,11 +1,8 @@
 package com.inventoryManagement;
 
-
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class StoreTest {
     @Test
@@ -31,5 +28,28 @@ public class StoreTest {
         Store store = new Store("Argentina", 100, 50);
         assertEquals(250, store.calculateSalePriceFor(5));
     }
+    @Test
+    public void testPurchaseGivesSuccessStatusIfPurchaseIsSuccessfullyDone(){
+        Store store = new Store("Brazil", 100, 100);
+        assertTrue(store.purchase(5));
+    }
+    @Test
+    public void testPurchaseReducesCurrentStockIfPurchaseIsSuccessful(){
+        Store store = new Store("Brazil", 100, 100);
+        store.purchase(5);
+        assertEquals(95, store.getStock());
+    }
+    @Test
+    public void testPurchaseGivesFailureStatusIfPurchaseIsUnsuccessful(){
+        Store store = new Store("Brazil", 100, 100);
+        assertFalse(store.purchase(105));
+    }
 
+    @Test
+    public void testPurchaseDoesnotReduceTheStockIfPurchaseIsUnsuccessful(){
+        Store store = new Store("Brazil", 100, 100);
+        store.purchase(105);
+        assertEquals(100, store.getStock());
+
+    }
 }

@@ -12,7 +12,7 @@ public class InventoryManager {
 
     public String placeOrder(String country, int numberOfItems) {
         try {
-            return Integer.toString(onlineStore.getSalePrice(country, numberOfItems));
+            return Integer.toString(onlineStore.order(country, numberOfItems));
         } catch (StoreNotFoundException e) {
             return e.getMessage();
         }
