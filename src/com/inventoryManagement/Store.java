@@ -11,29 +11,14 @@ public class Store {
         this.price = price;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Store store = (Store) o;
-
-        if (stock != store.stock) return false;
-        if (price != store.price) return false;
-        return !(country != null ? !country.equals(store.country) : store.country != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = country != null ? country.hashCode() : 0;
-        result = 31 * result + stock;
-        result = 31 * result + price;
-        return result;
-    }
-
     public boolean isBasedIn(String country) {
         return this.country.equals(country);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        Store store = (Store) object;
+        return country.equals(store.country) && stock == store.stock && price == store.price;
     }
 
     public int calculateSalePriceFor(int numberOfItems) {

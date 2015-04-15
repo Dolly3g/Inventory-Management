@@ -4,27 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OnlineStore {
-    List<Store> stores = new ArrayList<Store>();
+    private final List<Store> stores = new ArrayList<>();
 
-    public int getSalePrice(String country, int numberOfItems) {
+    public int getSalePrice(String country, int numberOfItems) throws StoreNotFoundException {
         Store store = searchStoreByCountry(country);
+        if (store == null)
+            throw new StoreNotFoundException("Company doesn't provide services in " + country);
         return store.calculateSalePriceFor(numberOfItems);
     }
 
     private Store searchStoreByCountry(String country) {
         for (Store store : stores) {
-            boolean isBasedIn = store.isBasedIn(country);
-            if (isBasedIn)
+            if (store.isBasedIn(country))
                 return store;
         }
         return null;
     }
 
     public boolean addStore(Store store) {
-        if (!stores.contains(store)) {
-            stores.add(store);
-            return true;
-        }
-        return false;
+        if (stores.contains(store)) return false;
+        stores.add(store);
+        return true;
     }
 }
