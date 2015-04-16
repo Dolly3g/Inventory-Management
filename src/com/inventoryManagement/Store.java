@@ -35,4 +35,8 @@ public class Store {
     public int getStock() {
         return stock;
     }
+
+    public String getStatement() {
+        return country + "," + stock;
+    }
 }

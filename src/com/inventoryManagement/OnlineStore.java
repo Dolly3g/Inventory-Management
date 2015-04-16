@@ -1,17 +1,20 @@
 package com.inventoryManagement;
 
+import javax.naming.InsufficientResourcesException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OnlineStore {
     private final List<Store> stores = new ArrayList<>();
 
-    private Store searchStoreByCountry(String country) {
+    private Store searchStoreByCountry(String country) throws StoreNotFoundException {
         for (Store store : stores) {
             if (store.isBasedIn(country))
                 return store;
         }
-        return null;
+        throw new StoreNotFoundException("Company doesn't provide services in " + country);
     }
 
     public boolean addStore(Store store) {
@@ -20,13 +23,19 @@ public class OnlineStore {
         return true;
     }
 
-    public int order(String country, int numberOfItems) throws StoreNotFoundException {
-        Store store = searchStoreByCountry(country);
-        if (store == null)
-            throw new StoreNotFoundException("Company doesn't provide services in " + country);
-        if(store.purchase(numberOfItems)){
-            return store.calculateSalePriceFor(numberOfItems);
+    public Map<String, Integer> order(String country, int numberOfItems) throws StoreNotFoundException {
+        Map<String,Integer> statement = new HashMap<>();
+        Store countryStore = searchStoreByCountry(country);
+
+        if(countryStore.purchase(numberOfItems)){
+            statement.put("cost",countryStore.calculateSalePriceFor(numberOfItems));
         }
-        return -1;
+
+        for (Store store : stores) {
+            String[] storeStatement = store.getStatement().split(",");
+            statement.put(storeStatement[0], Integer.valueOf(storeStatement[1]));
+        }
+
+        return statement;
     }
 }

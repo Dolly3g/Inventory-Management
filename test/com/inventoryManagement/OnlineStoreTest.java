@@ -3,6 +3,9 @@ package com.inventoryManagement;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,7 +21,6 @@ public class OnlineStoreTest {
         onlineStore = new OnlineStore();
         brazil = new Store("Brazil", 100, 100);
         argentina = new Store("Argentina", 100, 50);
-
     }
 
     @Test
@@ -36,9 +38,15 @@ public class OnlineStoreTest {
     }
 
     @Test
-    public void testOrderReturnsCostOfThePurchaseIfPurchaseIsSuccessful() throws StoreNotFoundException {
+    public void testOrderReturnsStatementIfPurchaseIsSuccessful() throws StoreNotFoundException {
         onlineStore.addStore(brazil);
-        assertEquals(500, onlineStore.order("Brazil", 5));
+        onlineStore.addStore(argentina);
+        Map<String, Integer> statement = onlineStore.order("Brazil", 5);
+        Map<String, Integer> expected = new HashMap<>();
+        expected.put("cost",500);
+        expected.put("Argentina",100);
+        expected.put("Brazil",95);
+        assertTrue(expected.equals(statement));
     }
 
 }
