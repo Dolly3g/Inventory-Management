@@ -1,6 +1,5 @@
 package com.inventoryManagement;
 
-import javax.naming.InsufficientResourcesException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,18 +23,20 @@ public class OnlineStore {
     }
 
     public Map<String, Integer> order(String country, int numberOfItems) throws StoreNotFoundException {
-        Map<String,Integer> statement = new HashMap<>();
         Store countryStore = searchStoreByCountry(country);
+        Map<String, Integer> statement = new HashMap<>();
 
-        if(countryStore.purchase(numberOfItems)){
-            statement.put("cost",countryStore.calculateSalePriceFor(numberOfItems));
-        }
+        if (countryStore.purchase(numberOfItems))
+            statement.put("cost", countryStore.calculateSalePriceFor(numberOfItems));
 
+        populateStatement(statement);
+        return statement;
+    }
+
+    private void populateStatement(Map<String, Integer> statement) {
         for (Store store : stores) {
             String[] storeStatement = store.getStatement().split(",");
             statement.put(storeStatement[0], Integer.valueOf(storeStatement[1]));
         }
-
-        return statement;
     }
 }

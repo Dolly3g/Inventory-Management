@@ -1,55 +1,64 @@
 package com.inventoryManagement;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class StoreTest {
+
+    private Store brazil;
+    private Store argentina;
+
+    @Before
+    public void setUp() throws Exception {
+        brazil = new Store("Brazil", 100, 100);
+        argentina = new Store("Argentina", 100, 50);
+    }
+
     @Test
     public void testIsBasedInTellsThatTheStoreIsBasedInBrazil() {
-        Store store = new Store("Brazil", 100, 100);
-        assertTrue(store.isBasedIn("Brazil"));
+        assertTrue(brazil.isBasedIn("Brazil"));
     }
 
     @Test
     public void testIsBasedInTellsThatTheStoreIsNotBasedInBrazil() {
-        Store store = new Store("Brazil", 100, 100);
-        assertFalse(store.isBasedIn("Argentina"));
+        assertFalse(brazil.isBasedIn("Argentina"));
     }
 
     @Test
     public void testCalculateSalePriceForGivesCostOf5IpodsOfBrazil() {
-        Store store = new Store("Brazil", 100, 100);
-        assertEquals(500, store.calculateSalePriceFor(5));
+        assertEquals(500, brazil.calculateSalePriceFor(5));
     }
 
     @Test
     public void testCalculateSalePriceForGivesCostOf5IpodsOfArgentina() {
-        Store store = new Store("Argentina", 100, 50);
-        assertEquals(250, store.calculateSalePriceFor(5));
+        assertEquals(250, argentina.calculateSalePriceFor(5));
     }
     @Test
     public void testPurchaseGivesSuccessStatusIfPurchaseIsSuccessfullyDone(){
-        Store store = new Store("Brazil", 100, 100);
-        assertTrue(store.purchase(5));
+        assertTrue(brazil.purchase(5));
     }
     @Test
     public void testPurchaseReducesCurrentStockIfPurchaseIsSuccessful(){
-        Store store = new Store("Brazil", 100, 100);
-        store.purchase(5);
-        assertEquals(95, store.getStock());
+        brazil.purchase(5);
+        assertEquals(95, brazil.getStock());
     }
     @Test
     public void testPurchaseGivesFailureStatusIfPurchaseIsUnsuccessful(){
-        Store store = new Store("Brazil", 100, 100);
-        assertFalse(store.purchase(105));
+        assertFalse(brazil.purchase(105));
     }
 
     @Test
     public void testPurchaseDoesnotReduceTheStockIfPurchaseIsUnsuccessful(){
-        Store store = new Store("Brazil", 100, 100);
-        store.purchase(105);
-        assertEquals(100, store.getStock());
+        brazil.purchase(105);
+        assertEquals(100, brazil.getStock());
+    }
 
+    @Test
+    public void testGetStatementGetsTheStatementContainingCountryNameAndStoc () {
+        assertEquals("Brazil,100", brazil.getStatement());
+        brazil.purchase(20);
+        assertEquals("Brazil,80", brazil.getStatement());
     }
 }

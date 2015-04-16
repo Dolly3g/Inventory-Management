@@ -1,7 +1,10 @@
 package com.inventoryManagement;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TestName;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,10 +14,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class OnlineStoreTest {
-
     private Store argentina;
     private Store brazil;
     private OnlineStore onlineStore;
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -38,15 +43,34 @@ public class OnlineStoreTest {
     }
 
     @Test
-    public void testOrderReturnsStatementIfPurchaseIsSuccessful() throws StoreNotFoundException {
+    public void testOrderReturnsStatementWithCostIfPurchaseIsSuccessful() throws StoreNotFoundException {
         onlineStore.addStore(brazil);
         onlineStore.addStore(argentina);
         Map<String, Integer> statement = onlineStore.order("Brazil", 5);
         Map<String, Integer> expected = new HashMap<>();
-        expected.put("cost",500);
-        expected.put("Argentina",100);
-        expected.put("Brazil",95);
+        expected.put("cost", 500);
+        expected.put("Argentina", 100);
+        expected.put("Brazil", 95);
         assertTrue(expected.equals(statement));
     }
 
+    @Test
+    public void testOrderReturnsStatementWithoutCostIfPurchaseIsUnsuccessful() throws StoreNotFoundException {
+        onlineStore.addStore(brazil);
+        onlineStore.addStore(argentina);
+        Map<String, Integer> statement = onlineStore.order("Brazil", 225);
+        Map<String, Integer> expected = new HashMap<>();
+        expected.put("Argentina", 100);
+        expected.put("Brazil", 100);
+        assertTrue(expected.equals(statement));
+    }
+
+    @Test
+    public void testOrderThrowsExceptionIfStoreDoesNotExist() throws StoreNotFoundException {
+        onlineStore.addStore(brazil);
+        onlineStore.addStore(argentina);
+        exception.expect(StoreNotFoundException.class);
+        exception.expectMessage("Company doesn't provide services in Dubai");
+        onlineStore.order("Dubai", 5);
+    }
 }

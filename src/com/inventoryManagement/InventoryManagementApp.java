@@ -5,8 +5,7 @@ public class InventoryManagementApp {
         OnlineStore onlineStore = new OnlineStore();
         onlineStore.addStore(new Store("Brazil", 100, 100));
         onlineStore.addStore(new Store("Argentina", 100, 50));
-        InventoryManager inventoryManager = new InventoryManager();
-        inventoryManager.manage(onlineStore);
+        InventoryManager inventoryManager = new InventoryManager(onlineStore);
         String statement = inventoryManager.placeOrder("Brazil", 500);
         System.out.println(statement);
     }
