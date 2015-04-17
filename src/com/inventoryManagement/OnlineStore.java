@@ -22,14 +22,27 @@ public class OnlineStore {
         return true;
     }
 
-    public Map<String, Integer> order(String country, int numberOfItems) throws StoreNotFoundException {
-        Store countryStore = searchStoreByCountry(country);
+    // online store ordering...
+    public Map<String, Integer> order(String country, int demand) throws StoreNotFoundException {
+        Store store = searchStoreByCountry(country);
         Map<String, Integer> statement = new HashMap<>();
 
-        if (countryStore.purchase(numberOfItems))
-            statement.put("cost", countryStore.calculateSalePriceFor(numberOfItems));
+        if(!isStockAvailable(demand)){
+            populateStatement(statement);
+            return statement;
+        }
+
+        int totalSupply = store.purchase(demand);
+        int totalCost = store.calculateSalePriceFor(totalSupply);
+        for (Store s : stores) {
+            if(totalSupply == demand)break;
+            int currentSupply = s.purchase(demand - totalSupply);
+            totalCost += s.calculateSalePriceFor(currentSupply);
+        }
 
         populateStatement(statement);
+        statement.put("cost",totalCost);
+
         return statement;
     }
 
@@ -38,5 +51,17 @@ public class OnlineStore {
             String[] storeStatement = store.getStatement().split(",");
             statement.put(storeStatement[0], Integer.valueOf(storeStatement[1]));
         }
+    }
+
+    public boolean isStockAvailable(int numberOfItems) {
+        return getTotalStock() >= numberOfItems;
+    }
+
+    private int getTotalStock() {
+        int itemsFound = 0;
+        for (Store store : stores) {
+            itemsFound += store.getStock();
+        }
+        return itemsFound;
     }
 }

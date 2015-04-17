@@ -35,28 +35,23 @@ public class StoreTest {
     public void testCalculateSalePriceForGivesCostOf5IpodsOfArgentina() {
         assertEquals(250, argentina.calculateSalePriceFor(5));
     }
+
     @Test
-    public void testPurchaseGivesSuccessStatusIfPurchaseIsSuccessfullyDone(){
-        assertTrue(brazil.purchase(5));
-    }
-    @Test
-    public void testPurchaseReducesCurrentStockIfPurchaseIsSuccessful(){
-        brazil.purchase(5);
-        assertEquals(95, brazil.getStock());
-    }
-    @Test
-    public void testPurchaseGivesFailureStatusIfPurchaseIsUnsuccessful(){
-        assertFalse(brazil.purchase(105));
+    public void testPurchaseSuppliesTheDemandedStock() {
+        int supply = brazil.purchase(5);
+        assertEquals(5,supply);
+        assertEquals("Brazil,95", brazil.getStatement());
     }
 
     @Test
-    public void testPurchaseDoesnotReduceTheStockIfPurchaseIsUnsuccessful(){
-        brazil.purchase(105);
-        assertEquals(100, brazil.getStock());
+    public void testPurchaseSuppliesWholeStockIfDemandIsMoreThanTheStock() {
+        int supply = brazil.purchase(105);
+        assertEquals(100,supply);
+        assertEquals("Brazil,0", brazil.getStatement());
     }
 
     @Test
-    public void testGetStatementGetsTheStatementContainingCountryNameAndStoc () {
+    public void testGetStatementGetsTheStatementContainingCountryNameAndStoc() {
         assertEquals("Brazil,100", brazil.getStatement());
         brazil.purchase(20);
         assertEquals("Brazil,80", brazil.getStatement());

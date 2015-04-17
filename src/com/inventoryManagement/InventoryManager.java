@@ -4,7 +4,6 @@ import java.util.Map;
 
 public class InventoryManager {
     private OnlineStore onlineStore;
-
     public InventoryManager(OnlineStore onlineStore) {
         this.onlineStore = onlineStore;
     }

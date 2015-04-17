@@ -73,4 +73,32 @@ public class OnlineStoreTest {
         exception.expectMessage("Company doesn't provide services in Dubai");
         onlineStore.order("Dubai", 5);
     }
+
+    @Test
+    public void testIsStockAvailableReturnsTrueIfStockIsAvailable() throws StoreNotFoundException {
+        onlineStore.addStore(brazil);
+        onlineStore.addStore(argentina);
+        assertTrue(onlineStore.isStockAvailable(120));
+        assertTrue(onlineStore.isStockAvailable(200));
+    }
+    @Test
+    public void testIsStockAvailableReturnsFalseIfStockIsUnavailable() throws StoreNotFoundException {
+        onlineStore.addStore(brazil);
+        onlineStore.addStore(argentina);
+        assertFalse(onlineStore.isStockAvailable(201));
+    }
+
+    @Test
+    public void testOrderCanOrderTheStockFromOtherCountries() throws StoreNotFoundException {
+        onlineStore.addStore(brazil);
+        onlineStore.addStore(argentina);
+        Map<String, Integer> statement = onlineStore.order("Brazil", 101);
+        Map<String, Integer> expected = new HashMap<>();
+        expected.put("cost", 10050);
+        expected.put("Argentina", 99);
+        expected.put("Brazil", 0);
+        System.out.println(statement);
+        System.out.println(expected);
+        assertTrue(expected.equals(statement));
+    }
 }

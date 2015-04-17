@@ -25,18 +25,26 @@ public class Store {
         return numberOfItems * price;
     }
 
-    public boolean purchase(int numberOfItems) {
-        if(numberOfItems > 100)
-            return false;
-        stock = stock - numberOfItems;
-        return true;
+    public int purchase(int numberOfItems) {
+        if (stock > numberOfItems) {
+            stock = stock - numberOfItems;
+            return numberOfItems;
+        }
+        int previousStock = stock;
+        emptyStock();
+        return previousStock;
+    }
+
+    private void emptyStock() {
+        stock = 0;
+    }
+
+
+    public String getStatement() {
+        return country + "," + stock;
     }
 
     public int getStock() {
         return stock;
-    }
-
-    public String getStatement() {
-        return country + "," + stock;
     }
 }
