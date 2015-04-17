@@ -24,31 +24,34 @@ public class OnlineStore {
         return true;
     }
 
-    // online store ordering...
     public Map<String, Integer> order(String country, int demand) throws StoreNotFoundException {
         Store store = searchStoreByCountry(country);
         Map<String, Integer> statement = new HashMap<>();
-
         if(!isStockAvailable(demand)){
             populateStatement(statement);
             return statement;
         }
 
-        int totalSupply = store.purchase(demand);
-        int totalCost = store.calculateSalePriceFor(totalSupply);
-        for (Store s : stores) {
-            if(totalSupply == demand)break;
-            int currentSupply = s.purchase(demand - totalSupply);
-            totalSupply += currentSupply;
-            totalCost += getTranportationCost(currentSupply) + s.calculateSalePriceFor(currentSupply);
-        }
+        int totalCost = getTotalCost(demand, store);
 
         populateStatement(statement);
         statement.put("cost", totalCost);
         return statement;
     }
 
-    private int getTranportationCost(int currentSupply) {
+    private int getTotalCost(int demand, Store store) {
+        int totalSupply = store.purchase(demand);
+        int totalCost = store.calculateSalePriceFor(totalSupply);
+        for (Store s : stores) {
+            if(totalSupply == demand)break;
+            int currentSupply = s.purchase(demand - totalSupply);
+            totalSupply += currentSupply;
+            totalCost += getTransportationCost(currentSupply) + s.calculateSalePriceFor(currentSupply);
+        }
+        return totalCost;
+    }
+
+    private int getTransportationCost(int currentSupply) {
         return getNumberOfBatches(currentSupply) * TRANSPORT_COST_PER_BATCH;
     }
 
