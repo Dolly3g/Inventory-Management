@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public class OnlineStore {
+    private final int TRANSPORT_COST_PER_BATCH = 400;
+    private final int BATCH_SIZE = 10;
     private final List<Store> stores = new ArrayList<>();
 
     private Store searchStoreByCountry(String country) throws StoreNotFoundException {
@@ -37,13 +39,21 @@ public class OnlineStore {
         for (Store s : stores) {
             if(totalSupply == demand)break;
             int currentSupply = s.purchase(demand - totalSupply);
-            totalCost += s.calculateSalePriceFor(currentSupply);
+            totalSupply += currentSupply;
+            totalCost += getTranportationCost(currentSupply) + s.calculateSalePriceFor(currentSupply);
         }
 
         populateStatement(statement);
-        statement.put("cost",totalCost);
-
+        statement.put("cost", totalCost);
         return statement;
+    }
+
+    private int getTranportationCost(int currentSupply) {
+        return getNumberOfBatches(currentSupply) * TRANSPORT_COST_PER_BATCH;
+    }
+
+    private int getNumberOfBatches(int currentSupply) {
+        return (currentSupply % BATCH_SIZE + currentSupply )/ BATCH_SIZE;
     }
 
     private void populateStatement(Map<String, Integer> statement) {

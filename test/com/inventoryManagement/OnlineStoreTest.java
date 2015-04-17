@@ -4,14 +4,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestName;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.*;
+import static org.junit.Assert.*;
 
 public class OnlineStoreTest {
     private Store argentina;
@@ -92,13 +87,25 @@ public class OnlineStoreTest {
     public void testOrderCanOrderTheStockFromOtherCountries() throws StoreNotFoundException {
         onlineStore.addStore(brazil);
         onlineStore.addStore(argentina);
-        Map<String, Integer> statement = onlineStore.order("Brazil", 101);
+        Map<String, Integer> statement = onlineStore.order("Argentina", 120);
         Map<String, Integer> expected = new HashMap<>();
-        expected.put("cost", 10050);
-        expected.put("Argentina", 99);
+        expected.put("cost", 7800);
+        expected.put("Argentina", 0);
+        expected.put("Brazil", 80);
+        assertTrue(expected.equals(statement));
+    }
+
+    @Test
+    public void testOrderCanOrderTheStockFromMultipleCountries() throws StoreNotFoundException {
+        onlineStore.addStore(brazil);
+        onlineStore.addStore(argentina);
+        onlineStore.addStore(new Store("India",100,100));
+        Map<String, Integer> statement = onlineStore.order("Argentina", 250);
+        Map<String, Integer> expected = new HashMap<>();
+        expected.put("cost", 26000);
+        expected.put("Argentina", 0);
         expected.put("Brazil", 0);
-        System.out.println(statement);
-        System.out.println(expected);
+        expected.put("India", 50);
         assertTrue(expected.equals(statement));
     }
 }
