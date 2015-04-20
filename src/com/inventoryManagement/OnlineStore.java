@@ -24,56 +24,60 @@ public class OnlineStore {
         return true;
     }
 
-    public Map<String, Integer> order(String country, int demand) throws StoreNotFoundException {
+    public Map<String, Price> order(Product product, String country, Quantity demand) throws StoreNotFoundException {
         Store store = searchStoreByCountry(country);
-        Map<String, Integer> statement = new HashMap<>();
-        if(!isStockAvailable(demand)){
+        Map<String, Price> statement = new HashMap<>();
+        if(!isStockAvailable(product, demand)){
             populateStatement(statement);
             return statement;
         }
 
-        int totalCost = getTotalCost(demand, store);
+        Price totalCost = getTotalCost(product, store, demand);
 
         populateStatement(statement);
         statement.put("cost", totalCost);
         return statement;
     }
 
-    private int getTotalCost(int demand, Store store) {
-        int totalSupply = store.purchase(demand);
-        int totalCost = store.calculateSalePriceFor(totalSupply);
+    private Price getTotalCost(Product product, Store store, Quantity demand) {
+        Quantity totalSupply = store.purchase(product, demand);
+        Price totalCost = store.calculateSalePriceFor(product, totalSupply);
         for (Store s : stores) {
             if(totalSupply == demand)break;
-            int currentSupply = s.purchase(demand - totalSupply);
-            totalSupply += currentSupply;
-            totalCost += getTransportationCost(currentSupply) + s.calculateSalePriceFor(currentSupply);
+            Quantity currentSupply = s.purchase(product, demand.reduce(totalSupply));
+            totalSupply = totalSupply.increaseBy(currentSupply);
+            totalCost = totalCost.increaseBy(getTransportationCost(currentSupply));
+            totalCost = totalCost.increaseBy(s.calculateSalePriceFor(product, currentSupply));
         }
         return totalCost;
     }
 
-    private int getTransportationCost(int currentSupply) {
-        return getNumberOfBatches(currentSupply) * TRANSPORT_COST_PER_BATCH;
+    private Price getTransportationCost(Quantity currentSupply) {
+        return new Price(getNumberOfBatches(currentSupply) * TRANSPORT_COST_PER_BATCH);
     }
 
-    private int getNumberOfBatches(int currentSupply) {
-        return (currentSupply % BATCH_SIZE + currentSupply )/ BATCH_SIZE;
+    private int getNumberOfBatches(Quantity currentSupply) {
+        return 0;
+//        return (currentSupply % BATCH_SIZE + currentSupply )/ BATCH_SIZE;
     }
 
-    private void populateStatement(Map<String, Integer> statement) {
+    private void populateStatement(Map<String, Price> statement) {
         for (Store store : stores) {
-            String[] storeStatement = store.getStatement().split(",");
-            statement.put(storeStatement[0], Integer.valueOf(storeStatement[1]));
+            String storeStatement = store.getStatement();
+            String[] lineSplit = storeStatement.split("\n");
+            statement.put(lineSplit[0], new Price(Integer.valueOf(lineSplit[1].split(":")[1])));
         }
     }
 
-    public boolean isStockAvailable(int numberOfItems) {
-        return getTotalStock() >= numberOfItems;
+    public boolean isStockAvailable(Product product, Quantity numberOfItems) {
+        return numberOfItems.compare(getTotalStock(product)) <= 0 ;
     }
 
-    private int getTotalStock() {
-        int itemsFound = 0;
+    private Quantity getTotalStock(Product product) {
+        Quantity itemsFound = new Quantity(0);
         for (Store store : stores) {
-            itemsFound += store.getStock();
+            Quantity stock = store.getStockOf("iPod");
+            itemsFound.increaseBy(stock);
         }
         return itemsFound;
     }

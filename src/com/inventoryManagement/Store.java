@@ -1,14 +1,14 @@
 package com.inventoryManagement;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Store {
     private String country;
-    private int stock;
-    private int price;
+    private Map<Product, Quantity> stocks = new HashMap<>();
 
-    public Store(String country, int stock, int price) {
+    public Store(String country) {
         this.country = country;
-        this.stock = stock;
-        this.price = price;
     }
 
     public boolean isBasedIn(String country) {
@@ -18,33 +18,65 @@ public class Store {
     @Override
     public boolean equals(Object object) {
         Store store = (Store) object;
-        return country.equals(store.country) && stock == store.stock && price == store.price;
+        return country.equals(store.country) && stocks.equals(store.stocks);
     }
 
-    public int calculateSalePriceFor(int numberOfItems) {
-        return numberOfItems * price;
+    public Price calculateSalePriceFor(Product product, Quantity quantity) {
+        int salePrice = quantity.multiply(product.getPrice());
+        return new Price(salePrice);
     }
 
-    public int purchase(int numberOfItems) {
-        if (stock > numberOfItems) {
-            stock = stock - numberOfItems;
-            return numberOfItems;
+    public Quantity purchase(Product product, Quantity quantity) {
+        Quantity stock = stocks.get(product);
+
+        if (stock.compare(quantity) == 1) {
+            updateStock(product, stock.reduce(quantity));
+            return quantity;
         }
-        int previousStock = stock;
-        emptyStock();
+        Quantity previousStock = stock;
+        emptyStock(product);
         return previousStock;
     }
 
-    private void emptyStock() {
-        stock = 0;
+    private void updateStock(Product product, Quantity newQuantity) {
+        stocks.put(product, newQuantity);
+    }
+
+    private void emptyStock(Product product) {
+        updateStock(product, new Quantity(0));
     }
 
 
     public String getStatement() {
-        return country + "," + stock;
+        StringBuilder statement = new StringBuilder(country + "\n");
+        for (Product product : stocks.keySet()) {
+            statement.append(product.getName());
+            statement.append(":");
+            statement.append(stocks.get(product) + "\n");
+        }
+        return statement.toString();
     }
 
-    public int getStock() {
-        return stock;
+    public boolean addStock(Product product, Quantity quantity) {
+        if (stocks.containsKey(product))
+            return false;
+        stocks.put(product, quantity);
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Store{" +
+                "country='" + country + '\'' +
+                ", stocks=" + stocks +
+                '}';
+    }
+
+    public Quantity getStockOf(String productName) {
+        for (Product product : stocks.keySet()) {
+            if(productName.equals(product.getName()))
+                return stocks.get(product);
+        }
+        return null;
     }
 }

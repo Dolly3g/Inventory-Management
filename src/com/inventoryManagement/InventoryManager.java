@@ -8,16 +8,16 @@ public class InventoryManager {
         this.onlineStore = onlineStore;
     }
 
-    public String placeOrder(String country, int numberOfItems) {
+    public String placeOrder(String country, Quantity numberOfItems) {
         try {
-            Map<String, Integer> statement = onlineStore.order(country, numberOfItems);
+            Map<String, Price> statement = onlineStore.order(new Product("iPod",new Price(100)), country, numberOfItems);
             return formatStatement(statement);
         } catch (StoreNotFoundException e) {
             return e.getMessage();
         }
     }
 
-    private String formatStatement(Map<String, Integer> statement) {
+    private String formatStatement(Map<String, Price> statement) {
         StringBuilder result = new StringBuilder();
         for (String key : statement.keySet()) {
             result.append(key).append(":");

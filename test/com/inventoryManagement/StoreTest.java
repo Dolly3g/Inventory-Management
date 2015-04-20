@@ -9,11 +9,15 @@ public class StoreTest {
 
     private Store brazil;
     private Store argentina;
+    private Product brazilIPod;
+    private Product argentinaIPod;
 
     @Before
     public void setUp() throws Exception {
-        brazil = new Store("Brazil", 100, 100);
-        argentina = new Store("Argentina", 100, 50);
+        brazil = new Store("Brazil");
+        argentina = new Store("Argentina");
+        brazilIPod = new Product("iPod", new Price(100));
+        argentinaIPod = new Product("iPod", new Price(50));
     }
 
     @Test
@@ -27,33 +31,49 @@ public class StoreTest {
     }
 
     @Test
+    public void testAddStockAddsTheProductToTheStore() {
+        assertTrue(brazil.addStock(brazilIPod, new Quantity(100)));
+
+    }
+
+    @Test
+    public void testAddStockAddsTheProductToTheStoreOnlyOnce() {
+        brazil.addStock(brazilIPod, new Quantity(100));
+        assertFalse(brazil.addStock(brazilIPod, new Quantity(100)));
+    }
+
+    @Test
     public void testCalculateSalePriceForGivesCostOf5IpodsOfBrazil() {
-        assertEquals(500, brazil.calculateSalePriceFor(5));
+        Price actual = brazil.calculateSalePriceFor(brazilIPod, new Quantity(5));
+        assertEquals(new Price(500), actual);
     }
 
     @Test
     public void testCalculateSalePriceForGivesCostOf5IpodsOfArgentina() {
-        assertEquals(250, argentina.calculateSalePriceFor(5));
+        assertEquals(new Price(250), argentina.calculateSalePriceFor(argentinaIPod, new Quantity(5)));
     }
 
     @Test
     public void testPurchaseSuppliesTheDemandedStock() {
-        int supply = brazil.purchase(5);
-        assertEquals(5,supply);
-        assertEquals("Brazil,95", brazil.getStatement());
+        brazil.addStock(brazilIPod, new Quantity(100));
+        Quantity supply = brazil.purchase(brazilIPod, new Quantity(5));
+        assertEquals(new Quantity(5), supply);
+        assertEquals("Brazil\niPod:95\n", brazil.getStatement());
     }
 
     @Test
     public void testPurchaseSuppliesWholeStockIfDemandIsMoreThanTheStock() {
-        int supply = brazil.purchase(105);
-        assertEquals(100,supply);
-        assertEquals("Brazil,0", brazil.getStatement());
+        brazil.addStock(brazilIPod, new Quantity(100));
+        Quantity supply = brazil.purchase(brazilIPod, new Quantity(105));
+        assertEquals(new Quantity(100), supply);
+        assertEquals("Brazil\niPod:0\n", brazil.getStatement());
     }
 
     @Test
     public void testGetStatementGetsTheStatementContainingCountryNameAndStoc() {
-        assertEquals("Brazil,100", brazil.getStatement());
-        brazil.purchase(20);
-        assertEquals("Brazil,80", brazil.getStatement());
+        brazil.addStock(brazilIPod, new Quantity(100));
+        assertEquals("Brazil\niPod:100\n", brazil.getStatement());
+        brazil.purchase(brazilIPod, new Quantity(20));
+        assertEquals("Brazil\niPod:80\n", brazil.getStatement());
     }
 }
