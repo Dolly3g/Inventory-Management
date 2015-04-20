@@ -10,20 +10,21 @@ public class InventoryManager {
 
     public String placeOrder(String country, Quantity numberOfItems) {
         try {
-            Map<String, Price> statement = onlineStore.order(new Product("iPod",new Price(100)), country, numberOfItems);
+            MainStatement statement = onlineStore.order(new Product("iPod", new Price(100)), country, numberOfItems);
             return formatStatement(statement);
         } catch (StoreNotFoundException e) {
             return e.getMessage();
         }
     }
 
-    private String formatStatement(Map<String, Price> statement) {
+    private String formatStatement(MainStatement statement) {
         StringBuilder result = new StringBuilder();
-        for (String key : statement.keySet()) {
-            result.append(key).append(":");
-            result.append(statement.get(key));
-            result.append(System.lineSeparator());
-        }
-        return (statement.get("cost") == null ? result.append("Out of Stock!") : result).toString();
+//        for (String key : statement.keySet()) {
+//            result.append(key).append(":");
+//            result.append(statement.get(key));
+//            result.append(System.lineSeparator());
+//        }
+//        return (statement.get("cost") == null ? result.append("Out of Stock!") : result).toString();
+        return "";
     }
 }

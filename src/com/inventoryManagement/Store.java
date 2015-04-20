@@ -27,7 +27,7 @@ public class Store {
     }
 
     public Quantity purchase(Product product, Quantity quantity) {
-        Quantity stock = stocks.get(product);
+        Quantity stock = getStockOf(product.getName());
 
         if (stock.compare(quantity) == 1) {
             updateStock(product, stock.reduce(quantity));
@@ -47,14 +47,13 @@ public class Store {
     }
 
 
-    public String getStatement() {
-        StringBuilder statement = new StringBuilder(country + "\n");
+    public StoreStatement getStatement() {
+        Map<Product, Quantity> products = new HashMap<>();
         for (Product product : stocks.keySet()) {
-            statement.append(product.getName());
-            statement.append(":");
-            statement.append(stocks.get(product) + "\n");
+            products.put(product, stocks.get(product));
         }
-        return statement.toString();
+        StoreStatement storeStatement = new StoreStatement("Brazil", products);
+        return storeStatement;
     }
 
     public boolean addStock(Product product, Quantity quantity) {
@@ -76,6 +75,14 @@ public class Store {
         for (Product product : stocks.keySet()) {
             if(productName.equals(product.getName()))
                 return stocks.get(product);
+        }
+        return null;
+    }
+
+    public Product getProductByName(String productName) {
+        for (Product product : stocks.keySet()) {
+            if(productName.equals(product.getName()))
+                return product;
         }
         return null;
     }

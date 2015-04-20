@@ -37,7 +37,7 @@ public class Price {
         return price;
     }
 
-    public Price increaseBy(Price price) {
-        return null;
+    public void increaseBy(Price price) {
+        this.price += price.price;
     }
 }

@@ -3,6 +3,9 @@ package com.inventoryManagement;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class StoreTest {
@@ -58,7 +61,17 @@ public class StoreTest {
         brazil.addStock(brazilIPod, new Quantity(100));
         Quantity supply = brazil.purchase(brazilIPod, new Quantity(5));
         assertEquals(new Quantity(5), supply);
-        assertEquals("Brazil\niPod:95\n", brazil.getStatement());
+    }
+
+    @Test
+    public void testGetStatementGetsTheStatementAfterPurchase() {
+        brazil.addStock(brazilIPod, new Quantity(100));
+        Quantity supply = brazil.purchase(brazilIPod, new Quantity(5));
+        assertEquals(new Quantity(5), supply);
+        Map<Product, Quantity> products = new HashMap<>();
+        products.put(brazilIPod, new Quantity(95));
+        StoreStatement expected = new StoreStatement("Brazil", products);
+        assertEquals(expected, brazil.getStatement());
     }
 
     @Test
@@ -66,14 +79,9 @@ public class StoreTest {
         brazil.addStock(brazilIPod, new Quantity(100));
         Quantity supply = brazil.purchase(brazilIPod, new Quantity(105));
         assertEquals(new Quantity(100), supply);
-        assertEquals("Brazil\niPod:0\n", brazil.getStatement());
-    }
-
-    @Test
-    public void testGetStatementGetsTheStatementContainingCountryNameAndStoc() {
-        brazil.addStock(brazilIPod, new Quantity(100));
-        assertEquals("Brazil\niPod:100\n", brazil.getStatement());
-        brazil.purchase(brazilIPod, new Quantity(20));
-        assertEquals("Brazil\niPod:80\n", brazil.getStatement());
+        Map<Product, Quantity> products = new HashMap<>();
+        products.put(brazilIPod, new Quantity(0));
+        StoreStatement expected = new StoreStatement("Brazil", products);
+        assertEquals(expected, brazil.getStatement());
     }
 }

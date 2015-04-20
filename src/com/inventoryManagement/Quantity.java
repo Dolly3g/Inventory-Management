@@ -45,8 +45,11 @@ public class Quantity {
         return new Quantity(this.quantity - quantity.quantity);
     }
 
-    public Quantity increaseBy(Quantity quantity) {
-        Quantity quantity1 = new Quantity(this.quantity + quantity.quantity);
-        return quantity1;
+    public void increaseBy(Quantity quantity) {
+        this.quantity += quantity.quantity;
+    }
+
+    public int toInt() {
+        return quantity;
     }
 }
