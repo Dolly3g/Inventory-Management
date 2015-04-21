@@ -52,7 +52,7 @@ public class Store {
         for (Product product : stocks.keySet()) {
             products.put(product, stocks.get(product));
         }
-        StoreStatement storeStatement = new StoreStatement("Brazil", products);
+        StoreStatement storeStatement = new StoreStatement(country, products);
         return storeStatement;
     }
 

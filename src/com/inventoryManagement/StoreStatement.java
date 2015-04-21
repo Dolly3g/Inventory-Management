@@ -2,9 +2,6 @@ package com.inventoryManagement;
 
 import java.util.Map;
 
-/**
- * Created by dollyg on 20/04/15.
- */
 public class StoreStatement {
 
     private String country;
@@ -12,10 +9,14 @@ public class StoreStatement {
 
     @Override
     public String toString() {
-        return "StoreStatement{" +
-                "country='" + country + '\'' +
-                ", products=" + products +
-                '}';
+        String statement = "";
+        statement += country;
+        statement += System.lineSeparator();
+        for (Product product : products.keySet()) {
+            statement += product;
+            statement += " : "+ products.get(product);
+        }
+        return statement;
     }
 
     public StoreStatement(String country, Map<Product, Quantity> products) {
